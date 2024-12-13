@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avoid the Blocks</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffffff;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            background-color: #f0f0f0;
+            border: 1px solid #000;
+        }
+        .menu {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            z-index: 10;
+        }
+        .menu.hidden {
+            display: none;
+        }
+        .menu button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu" id="menu">
+        <h1>Select Level</h1>
+        <button onclick="startGame('Easy')">Easy</button>
+        <button onclick="startGame('Medium')">Medium</button>
+        <button onclick="startGame('Hard')">Hard</button>
+    </div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const menu = document.getElementById("menu");
+
+        let player = { x: 375, y: 550, width: 50, height: 50, speed: 7 };
+        let enemies = [];
+        let score = 0;
+        let gameLoop;
+        let spawnRate;
+        let enemySpeed;
+        let level;
+
+        const levels = {
+            Easy: { enemySpeed: 3, spawnRate: 40 },
+            Medium: { enemySpeed: 5, spawnRate: 30 },
+            Hard: { enemySpeed: 8, spawnRate: 20 },
+        };
+
+        function startGame(selectedLevel) {
+            level = selectedLevel;
+            enemySpeed = levels[level].enemySpeed;
+            spawnRate = levels[level].spawnRate;
+            player.x = 375;
+            player.y = 550;
+            enemies = [];
+            score = 0;
+
+            menu.classList.add("hidden");
+            gameLoop = setInterval(updateGame, 1000 / 60);
+        }
+
+        function addEnemy() {
+            const x = Math.random() * (canvas.width - 50);
+            enemies.push({ x, y: -50, width: 50, height: 50 });
+        }
+
+        function updateGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Player movement
+            if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
+            if (keys["ArrowRight"] && player.x < canvas.width - player.width) player.x += player.speed;
+
+            // Add enemies
+            if (score % spawnRate === 0) addEnemy();
+
+            // Move enemies
+            enemies.forEach(enemy => enemy.y += enemySpeed);
+
+            // Remove off-screen enemies
+            enemies = enemies.filter(enemy => enemy.y < canvas.height);
+
+            // Check collisions
+            for (let enemy of enemies) {
+                if (
+                    player.x < enemy.x + enemy.width &&
+                    player.x + player.width > enemy.x &&
+                    player.y < enemy.y + enemy.height &&
+                    player.y + player.height > enemy.y
+                ) {
+                    gameOver();
+                    return;
+                }
+            }
+
+            // Draw player
+            ctx.fillStyle = "blue";
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+
+            // Draw enemies
+            ctx.fillStyle = "red";
+            enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height));
+
+            // Draw score
+            ctx.fillStyle = "black";
+            ctx.font = "20px Arial";
+            ctx.fillText(`Score: ${score}`, 10, 20);
+            ctx.fillText(`Level: ${level}`, 10, 40);
+
+            // Increment score
+            score++;
+        }
+
+        function gameOver() {
+            clearInterval(gameLoop);
+            alert(`Game Over! Your score: ${score}`);
+            menu.classList.remove("hidden");
+        }
+
+        const keys = {};
+        window.addEventListener("keydown", e => keys[e.key] = true);
+        window.addEventListener("keyup", e => keys[e.key] = false);
+    </script>
+</body>
+</html>

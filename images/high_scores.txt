@@ -1,0 +1,3 @@
+Easy:580
+Medium:948
+Hard:697

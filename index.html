@@ -47,6 +47,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            user-select: none;
         }
         .menu button:hover {
             background-color: #45a049;
@@ -69,6 +70,7 @@
             color: white;
             border: none;
             border-radius: 5px;
+            user-select: none;
         }
         .touch-controls button:hover {
             background-color: #e68a00;
@@ -217,13 +219,25 @@
 
         leftButton.addEventListener("mousedown", () => touchKeys.left = true);
         leftButton.addEventListener("mouseup", () => touchKeys.left = false);
-        leftButton.addEventListener("touchstart", () => touchKeys.left = true);
-        leftButton.addEventListener("touchend", () => touchKeys.left = false);
+        leftButton.addEventListener("touchstart", e => {
+            e.preventDefault();
+            touchKeys.left = true;
+        });
+        leftButton.addEventListener("touchend", e => {
+            e.preventDefault();
+            touchKeys.left = false;
+        });
 
         rightButton.addEventListener("mousedown", () => touchKeys.right = true);
         rightButton.addEventListener("mouseup", () => touchKeys.right = false);
-        rightButton.addEventListener("touchstart", () => touchKeys.right = true);
-        rightButton.addEventListener("touchend", () => touchKeys.right = false);
+        rightButton.addEventListener("touchstart", e => {
+            e.preventDefault();
+            touchKeys.right = true;
+        });
+        rightButton.addEventListener("touchend", e => {
+            e.preventDefault();
+            touchKeys.right = false;
+        });
     </script>
 </body>
 </html>

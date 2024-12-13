@@ -84,7 +84,7 @@
         <button onclick="startGame('Medium')">Medium</button>
         <button onclick="startGame('Hard')">Hard</button>
     </div>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <canvas id="gameCanvas"></canvas>
 
     <div class="touch-controls">
         <button id="leftButton">Left</button>
@@ -238,6 +238,15 @@
             e.preventDefault();
             touchKeys.right = false;
         });
+
+        // Resize canvas on window resize
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas(); // Set initial size
     </script>
 </body>
 </html>
